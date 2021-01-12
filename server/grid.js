@@ -24,15 +24,19 @@ class Grid {
         this.state = "INITIAL_STATE";
         this.active_fleet = {
             "Carrier": {
+                "positions" : [],
                 "count": 0
             },
             "Battleship": {
+                "positions" : [],
                 "count": 0
             },
             "Cruiser": {
+                "positions" : [],
                 "count": 0
             },
             "Patrol boat": {
+                "positions" : [],
                 "count": 0
             }
         };
@@ -43,6 +47,14 @@ class Grid {
                 this.grid[i].push(" ");
             }
         }
+    }
+
+    rows() {
+        return rows;
+    }
+
+    cols() {
+        return cols;
     }
 
     fleet_max_intact_cell_count() {
@@ -75,55 +87,90 @@ class Grid {
         return this.grid_count_characters('.');
     }
 
+    shoot(row, col) {
+        if ((row < 0) || (row >= rows)) return;
+        if ((col < 0) || (col >= cols)) return;
+        switch (this.grid[row][col]) {
+            case ' ':
+                this.grid[row][col] = '.';
+                break;
+            case 'O':
+                this.grid[row][col] = 'X';
+                break;
+        }
+    }
+
+    grid_full() {
+        return this.fleet_intact_cell_count() == this.fleet_max_intact_cell_count()
+    }
 
     try_position_ship(shipType, orientation, x, y) {
-        let max_x = rows;
-        let max_y = cols;
-        if (!fleet_data.has(shipType))
+        let max_x = 0;
+        let max_y = 0;
+        if (!fleet_data.has(shipType)) {
+            console.log(`Unknown ship type ${shipType}`);
             return false;
+        }
         let ship_max_count = fleet_data.get(shipType).count;
         let ship_size = fleet_data.get(shipType).size;
-        if (this.active_fleet[shipType].count == ship_max_count)
+        if (this.active_fleet[shipType].count == ship_max_count) {
+            console.log(`Max ship count for ${shipType} reached.`);
             return false;
+        }
         switch (orientation) {
             case "HORIZONTAL":
-                max_x = max_x - ship_size;
+                max_x = rows - ship_size;
                 max_y = cols - 1;
                 break;
             case "VERTICAL":
                 max_x = rows - 1;
-                max_y = max_x - ship_size;
+                max_y = cols - ship_size;
                 break;
             default:
+                console.log(`Unknown orientation ${orientation}`);
                 return false;
                 break;
         }
-        if ((x < 0) || (x > max_x)) return false;
-        if ((y < 0) || (y > max_y)) return false;
+        if ((x < 0) || (x > max_x)) {
+            console.log(`x coordinate out of range, x: ${x}, max_x: ${max_x}`)
+            return false;
+        }
+        if ((y < 0) || (y > max_y)) {
+            console.log(`y coordinate out of range, y: ${y}, max_y: ${max_y}`)
+            return false;
+        }
         switch (orientation) {
             case "HORIZONTAL":
-                for (i = x; i < x + ship_size; i++ ) {
-                    if (this.grid[y][i] != ' ') return false;
+                for (let i = x; i < x + ship_size; i++ ) {
+                    if (this.grid[y][i] != ' ') {
+                        console.log(`non-empty cell x: ${i}, y: ${y}`)
+                        return false;
+                    }
                 }
                 break;
             case "VERTICAL":
-                for (j = y; j < y + ship_size; j++ ) {
-                    if (this.grid[j][x] != ' ') return false;
+                for (let j = y; j < y + ship_size; j++ ) {
+                    if (this.grid[j][x] != ' ') {
+                        console.log(`non-empty cell x: ${x}, y: ${j}`)
+                        return false;
+                    }
                 }
                 break;
         }
         switch (orientation) {
             case "HORIZONTAL":
-                for (i = x; i < x + ship_size; i++ ) {
+                for (let i = x; i < x + ship_size; i++ ) {
                     this.grid[y][i] = 'O'
                 }
                 break;
             case "VERTICAL":
-                for (j = y; j < y + ship_size; j++ ) {
+                for (let j = y; j < y + ship_size; j++ ) {
                     this.grid[j][x] = 'O'
                 }
                 break;
         }
+        this.active_fleet[shipType].count += 1;
+        this.active_fleet[shipType].positions.push([x, y, orientation]);
         return true;
     }
 }
