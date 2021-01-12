@@ -84,4 +84,30 @@ describe("Grid", () => {
         assert.strictEqual(grid.empty_cell_count(), grid.rows() * grid.cols() - 8,
             "Failed to update grid correctly");
     });
+    it("Should not be able to position ships on top of each other", () => {
+        let grid = new Grid();
+        assert(grid.try_position_ship("Carrier", "HORIZONTAL", 0, 0),
+            "Could not position carrier on empty grid.");
+        assert(!grid.try_position_ship("Battleship", "VERTICAL", 4, 0),
+            "Battleship on top of Carrier!.");
+        assert.strictEqual(grid.grid[0].slice(0,5).join(""), "OOOOO",
+            "Failed to update grid correctly");
+        assert.strictEqual(grid.empty_cell_count(), grid.rows() * grid.cols() - 5,
+            "Failed to update grid correctly");
+    });
+    it("Should not be able to position ships outside grid", () => {
+        let grid = new Grid();
+        assert(!grid.try_position_ship("Carrier", "HORIZONTAL", 6, 0),
+            "Carrier outside grid.");
+        assert(!grid.try_position_ship("Carrier", "VERTICAL", 0, 6),
+            "Carrier outside grid.");
+        assert(grid.try_position_ship("Carrier", "HORIZONTAL", 5, 0),
+            "Could not position carrier at end of grid.");
+        assert(grid.try_position_ship("Battleship", "VERTICAL", 0, 6),
+            "Could not position Battleship at end of grid.");
+        assert.strictEqual(grid.grid[0].slice(5,10).join(""), "OOOOO",
+            "Failed to update grid correctly");
+        assert.strictEqual(grid.empty_cell_count(), grid.rows() * grid.cols() - 9,
+            "Failed to update grid correctly");
+    });
 });
