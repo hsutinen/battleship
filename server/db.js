@@ -1,23 +1,20 @@
 class Db {
+    #games
     constructor() {
-        this.users = new Set();
-        this.games = new Map();
+        this.#games = new Map();
     }
 
-    addUser(userName) {
-        if (!this.users.has(userName))
-            this.users.add(userName);
+    add_game(id, game) {
+        this.#games.set(id, game);
     }
 
-    addGame(players, game) {
-        this.games.set(players, game);
+    get_game(id) {
+        return this.#games.get(id);
     }
 
-    findGame(players) {
-        if (this.games.has(players))
-            return this.games[players];
-        else
-            return null;
+    has_game(id) {
+        return this.#games.has(id);
     }
-    
 }
+
+export default Db;

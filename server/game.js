@@ -1,5 +1,6 @@
 import { v4 as uuid } from "uuid";
 import Grid from "./grid.js";
+import assert from "assert";
 
 class Game {
     #id
@@ -13,6 +14,31 @@ class Game {
 
     id() {
         return this.#id
+    }
+
+    status() {
+        let player1_id = "";
+        let player2_id = "";
+        if (this.number_of_players() < 2)
+            return { status: "WAITING_FOR_PLAYER"};
+        assert(this.number_of_players() === 2);  //Other states should not be possible
+        for(let item of this.#players.entries()) {
+            if (item[1].number === 0) 
+                player1_id = item[0];
+            else
+                player2_id = item[0];
+        }
+        let grid1 = this.#grids.get(player1_id);
+        let grid2 = this.#grids.get(player2_id);
+        let player1_ready = grid1.fleet_max_intact_cell_count() ===
+                    (grid1.fleet_damaged_cell_count() + grid1.fleet_intact_cell_count());
+        let player2_ready = grid2.fleet_max_intact_cell_count() ===
+                    (grid2.fleet_damaged_cell_count() + grid2.fleet_intact_cell_count());
+        if (player1_ready && player2_ready) {
+            return { status: "GAME_RUNNING" };
+        } else {
+            return { status: "GAME_INITIALIZING" };
+        }
     }
 
     has_player(playerName) {

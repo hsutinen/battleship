@@ -23,6 +23,7 @@ class Grid {
     #state
     #active_fleet
     #grid
+
     constructor() {
         this.clear()
     }
@@ -149,13 +150,11 @@ class Grid {
         let max_x = 0;
         let max_y = 0;
         if (!fleet_data.has(shipType)) {
-            console.log(`Unknown ship type ${shipType}`);
             return false;
         }
         let ship_max_count = fleet_data.get(shipType).count;
         let ship_size = fleet_data.get(shipType).size;
         if (this.number_of(shipType) == ship_max_count) {
-            console.log(`Max ship count for ${shipType} reached.`);
             return false;
         }
         switch (orientation) {
@@ -168,23 +167,19 @@ class Grid {
                 max_y = cols - ship_size;
                 break;
             default:
-                console.log(`Unknown orientation ${orientation}`);
                 return false;
                 break;
         }
         if ((x < 0) || (x > max_x)) {
-            console.log(`x coordinate out of range, x: ${x}, max_x: ${max_x}`)
             return false;
         }
         if ((y < 0) || (y > max_y)) {
-            console.log(`y coordinate out of range, y: ${y}, max_y: ${max_y}`)
             return false;
         }
         switch (orientation) {
             case "HORIZONTAL":
                 for (let i = x; i < x + ship_size; i++ ) {
                     if (this.#grid[y][i] != ' ') {
-                        console.log(`non-empty cell x: ${i}, y: ${y}`)
                         return false;
                     }
                 }
@@ -192,7 +187,6 @@ class Grid {
             case "VERTICAL":
                 for (let j = y; j < y + ship_size; j++ ) {
                     if (this.#grid[j][x] != ' ') {
-                        console.log(`non-empty cell x: ${x}, y: ${j}`)
                         return false;
                     }
                 }
