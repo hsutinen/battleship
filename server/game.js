@@ -34,9 +34,6 @@ class Game {
         let player_number_of_moves = 0;
         let other_number_of_moves = 0;
         for (let item of this.#grids.entries()) {
-            console.log("in has_turn()");
-            console.log(item[0]);
-            console.log(item[1]);
             if (item[0] !== playerId)
                 player_number_of_moves = item[1].number_of_moves();
             else
@@ -60,9 +57,6 @@ class Game {
         if (!this.has_turn(playerId))
             return;
         for (let item of this.#grids.entries()) {
-            console.log("in make_move()");
-            console.log(item[0]);
-            console.log(item[1]);
             if (item[0] != playerId)
                 item[1].shoot(x, y);
         }
