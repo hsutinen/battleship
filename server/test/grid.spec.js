@@ -27,7 +27,7 @@ describe("Grid", () => {
         let grid = new Grid();
         assert(grid.try_position_ship("Carrier", "HORIZONTAL", 0, 0),
             "Could not position carrier on empty grid.");
-        assert.strictEqual(grid.grid[0].slice(0,5).join(""), "OOOOO",
+        assert.strictEqual(grid.slice(0, 0, 5, "HORIZONTAL"), "OOOOO",
             "Failed to update grid correctly");
         assert.strictEqual(grid.empty_cell_count(), grid.rows() * grid.cols() - 5,
             "Failed to update grid correctly");
@@ -37,15 +37,7 @@ describe("Grid", () => {
         let grid = new Grid();
         assert(grid.try_position_ship("Carrier", "VERTICAL", 9, 0),
             "could not position carrier on empty grid.");
-        assert.strictEqual(grid.at(9, 0), 'O',
-            "Failed to update grid correctly");
-        assert.strictEqual(grid.at(9, 1), 'O',
-            "Failed to update grid correctly");
-        assert.strictEqual(grid.at(9, 2), 'O',
-            "Failed to update grid correctly");
-        assert.strictEqual(grid.at(9, 3), 'O',
-            "Failed to update grid correctly");
-        assert.strictEqual(grid.at(9, 4), 'O',
+        assert.strictEqual(grid.slice(9, 0, 5, "VERTICAL"), "OOOOO",
             "Failed to update grid correctly");
         assert.strictEqual(grid.empty_cell_count(), grid.rows() * grid.cols() - 5,
             "Failed to update grid correctly");
@@ -69,9 +61,9 @@ describe("Grid", () => {
             "Could not position Battleship on empty grid.");
         assert(!grid.try_position_ship("Battleship", "HORIZONTAL", 2, 2),
             "Too many Battleships on grid.");
-        assert.strictEqual(grid.grid[0].slice(0,5).join(""), "OOOO ",
+        assert.strictEqual(grid.slice(0, 0, 5, "HORIZONTAL"), "OOOO ",
             "Failed to update grid correctly");
-        assert.strictEqual(grid.grid[1].slice(1,6).join(""), "OOOO ",
+        assert.strictEqual(grid.slice(1, 1, 5, "HORIZONTAL"), "OOOO ",
             "Failed to update grid correctly");
         assert.strictEqual(grid.empty_cell_count(), grid.rows() * grid.cols() - 8,
             "Failed to update grid correctly");
@@ -83,9 +75,9 @@ describe("Grid", () => {
             "Could not position carrier on empty grid.");
         assert(grid.try_position_ship("Battleship", "HORIZONTAL", 0, 1),
             "Could not position carrier on empty grid.");
-        assert.strictEqual(grid.grid[0].slice(0,5).join(""), "OOOO ",
+        assert.strictEqual(grid.slice(0, 0, 5, "HORIZONTAL"), "OOOO ",
             "Failed to update grid correctly");
-        assert.strictEqual(grid.grid[1].slice(0,5).join(""), "OOOO ",
+        assert.strictEqual(grid.slice(0, 1, 5, "HORIZONTAL"), "OOOO ",
             "Failed to update grid correctly");
         assert.strictEqual(grid.empty_cell_count(), grid.rows() * grid.cols() - 8,
             "Failed to update grid correctly");
@@ -97,7 +89,7 @@ describe("Grid", () => {
             "Could not position carrier on empty grid.");
         assert(!grid.try_position_ship("Battleship", "VERTICAL", 4, 0),
             "Battleship on top of Carrier!.");
-        assert.strictEqual(grid.grid[0].slice(0,5).join(""), "OOOOO",
+        assert.strictEqual(grid.slice(0, 0, 6, "HORIZONTAL"), "OOOOO ",
             "Failed to update grid correctly");
         assert.strictEqual(grid.empty_cell_count(), grid.rows() * grid.cols() - 5,
             "Failed to update grid correctly");
@@ -113,7 +105,7 @@ describe("Grid", () => {
             "Could not position carrier at end of grid.");
         assert(grid.try_position_ship("Battleship", "VERTICAL", 0, 6),
             "Could not position Battleship at end of grid.");
-        assert.strictEqual(grid.grid[0].slice(5,10).join(""), "OOOOO",
+        assert.strictEqual(grid.slice(5, 0, 5, "HORIZONTAL"), "OOOOO",
             "Failed to update grid correctly");
         assert.strictEqual(grid.empty_cell_count(), grid.rows() * grid.cols() - 9,
             "Failed to update grid correctly");
@@ -125,19 +117,19 @@ describe("Grid", () => {
             "Could not position carrier on empty grid.");
         assert(grid.try_position_ship("Carrier", "HORIZONTAL", 1, 1),
             "Could not position carrier on empty grid.");
-        grid.shoot(5,1);
-        assert.strictEqual(grid.grid[1][5], "X", "Did not mark hit with X");
+        grid.shoot(5, 1);
+        assert.strictEqual(grid.at(5, 1), "X", "Did not mark hit with X");
         assert.strictEqual(grid.fleet_damaged_cell_count(), 1,  "Failed to update grid correctly");
         assert.strictEqual(grid.empty_cell_count(), grid.rows() * grid.cols() - 9,
             "Failed to update grid correctly");
         assert.strictEqual(grid.number_of_moves(), 1, "number_of_moves() count wrong.");
-        grid.shoot(9,9);
-        assert.strictEqual(grid.grid[9][9], ".", "Failed to update grid correctly");
+        grid.shoot(9, 9);
+        assert.strictEqual(grid.at(9, 9), ".", "Failed to update grid correctly");
         assert.strictEqual(grid.number_of_moves(), 2, "number_of_moves() count wrong.");
         assert.strictEqual(grid.empty_cell_count(), grid.rows() * grid.cols() - 9 - 1,
             "Failed to update grid correctly");
-        grid.shoot(8,8);
-        assert.strictEqual(grid.grid[8][8], ".", "Failed to update grid correctly");
+        grid.shoot(8, 8);
+        assert.strictEqual(grid.at(8, 8), ".", "Failed to update grid correctly");
         assert.strictEqual(grid.number_of_moves(), 3, "number_of_moves() count wrong.");
         assert.strictEqual(grid.empty_cell_count(), grid.rows() * grid.cols() - 9 - 2,
             "Failed to update grid correctly");

@@ -20,9 +20,16 @@ const fleet_data = new Map([
 ]);
 
 class Grid {
+    #state
+    #active_fleet
+    #grid
     constructor() {
-        this.state = "INITIAL_STATE";
-        this.active_fleet = {
+        this.clear()
+    }
+
+    clear() {
+        this.#state = "INITIAL_STATE";
+        this.#active_fleet = {
             "Carrier": {
                 "positions" : [],
             },
@@ -36,11 +43,11 @@ class Grid {
                 "positions" : [],
             }
         };
-        this.grid = [];
+        this.#grid = [];
         for (let i = 0; i < rows; i++) {
-            this.grid[i] = []
+            this.#grid[i] = []
             for (let j = 0; j < cols; j++) {
-                this.grid[i].push(" ");
+                this.#grid[i].push(" ");
             }
         }
     }
@@ -54,21 +61,37 @@ class Grid {
     }
     
     at(x, y) {
-        return this.grid[y][x];
+        return this.#grid[y][x];
+    }
+
+    slice(start_x, start_y, count, orientation) {
+        let res = "";
+        switch (orientation) {
+            case "HORIZONTAL":
+                res = this.#grid[start_y].slice(start_x, start_x + count).join("");
+                break;
+            case "VERTICAL":
+                for(let i = 0; i < count; i++) {
+                    res += this.#grid[start_y + i][start_x];
+                }
+                break;
+        }
+        return res;
     }
 
     number_of(shipType) {
-        if(this.active_fleet[shipType])
-            return this.active_fleet[shipType].positions.length;
+        if(this.#active_fleet[shipType])
+            return this.#active_fleet[shipType].positions.length;
         else
             return 0;
     }
 
     positions_of(shipType) {
-        if(this.active_fleet[shipType])
-            return this.active_fleet[shipType].positions;
+        if(this.#active_fleet[shipType])
+            return this.#active_fleet[shipType].positions;
         else
             return [];
+        
     }
 
     fleet_max_intact_cell_count() {
@@ -78,7 +101,7 @@ class Grid {
     }
 
     grid_count_characters(char) {
-        return this.grid.reduce((sum_x, x) =>
+        return this.#grid.reduce((sum_x, x) =>
             sum_x + x.reduce((sum_y, y) =>
                 sum_y + (y === char ? 1 : 0)
             , 0), 0);
@@ -108,12 +131,12 @@ class Grid {
     shoot(col, row) { // keep parameter order: x, y consistent
         if ((row < 0) || (row >= rows)) return;
         if ((col < 0) || (col >= cols)) return;
-        switch (this.grid[row][col]) {
+        switch (this.#grid[row][col]) {
             case ' ':
-                this.grid[row][col] = '.';
+                this.#grid[row][col] = '.';
                 break;
             case 'O':
-                this.grid[row][col] = 'X';
+                this.#grid[row][col] = 'X';
                 break;
         }
     }
@@ -160,7 +183,7 @@ class Grid {
         switch (orientation) {
             case "HORIZONTAL":
                 for (let i = x; i < x + ship_size; i++ ) {
-                    if (this.grid[y][i] != ' ') {
+                    if (this.#grid[y][i] != ' ') {
                         console.log(`non-empty cell x: ${i}, y: ${y}`)
                         return false;
                     }
@@ -168,7 +191,7 @@ class Grid {
                 break;
             case "VERTICAL":
                 for (let j = y; j < y + ship_size; j++ ) {
-                    if (this.grid[j][x] != ' ') {
+                    if (this.#grid[j][x] != ' ') {
                         console.log(`non-empty cell x: ${x}, y: ${j}`)
                         return false;
                     }
@@ -178,16 +201,16 @@ class Grid {
         switch (orientation) {
             case "HORIZONTAL":
                 for (let i = x; i < x + ship_size; i++ ) {
-                    this.grid[y][i] = 'O'
+                    this.#grid[y][i] = 'O'
                 }
                 break;
             case "VERTICAL":
                 for (let j = y; j < y + ship_size; j++ ) {
-                    this.grid[j][x] = 'O'
+                    this.#grid[j][x] = 'O'
                 }
                 break;
         }
-        this.active_fleet[shipType].positions.push({x, y, orientation});
+        this.#active_fleet[shipType].positions.push({x, y, orientation});
         return true;
     }
 }
