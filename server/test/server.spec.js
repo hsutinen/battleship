@@ -1,6 +1,8 @@
 import supertest from "supertest";
+import { v4 as uuid } from "uuid";
 import assert from "assert";
 import app from "../server.js";
+
 const uuidRegex = /^([0-9,a-f]){8}-([0-9,a-f]){4}-([0-9,a-f]){4}-([0-9,a-f]){4}-([0-9,a-f]){12}$/;
 
 describe('GET /join-game/:player', () => {
@@ -13,6 +15,29 @@ describe('GET /join-game/:player', () => {
       .then(response => {
           assert.match(response.body.game_id, uuidRegex, "Did not return game_id");
           assert.match(response.body.player_id, uuidRegex, "Did not return player_id");
+      });
+  });
+
+  it('Player should not be able to join same game twice', () => {
+    let game_id = 0;
+    return supertest(app)
+      .get('/reset-next-game')
+      .expect('Content-Type', /text\/html/)
+      .expect(200)
+      .then(response => {
+        return supertest(app).get('/join-game/player1')
+          .expect('Content-Type', /json/)
+          .expect(200)
+      })
+      .then(response => {
+        return supertest(app).get('/join-game/player1')
+          .expect('Content-Type', /json/)
+          .expect(200)
+      })
+      .then(response => {
+        assert.deepStrictEqual(response.body, {
+          error: "Player already joined"
+        });
       });
   });
 });
@@ -31,8 +56,21 @@ describe('GET /status/:game_id', () => {
         });
       });
   });
+
+  it('Does not accept game not in database', () => {
+    let game_id = 0;
+    return supertest(app)
+      .get(`/status/${uuid()}`)
+      .expect('Content-Type', /json/)
+      .expect(200)
+      .then(response => {
+        assert.deepStrictEqual(response.body, {
+          error: "Game not found in database"
+        });
+      });
+  });
   
-  it('responds with correct status for game', () => {
+  it('responds with correct status for game with one player', () => {
     let game_id = 0;
     return supertest(app)
       .get('/reset-next-game')
@@ -56,7 +94,7 @@ describe('GET /status/:game_id', () => {
       });
   });
 
-  it('responds with correct status for game', () => {
+  it('responds with correct status for game with two players', () => {
     let game_id = 0;
     return supertest(app)
       .get('/reset-next-game')
