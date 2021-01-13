@@ -56,6 +56,10 @@ class Grid {
     cols() {
         return cols;
     }
+    
+    at(x, y) {
+        return this.grid[y][x];
+    }
 
     fleet_max_intact_cell_count() {
         return [...fleet_data.values()].reduce(
@@ -87,7 +91,11 @@ class Grid {
         return this.grid_count_characters('.');
     }
 
-    shoot(row, col) {
+    number_of_moves() {
+        return this.fleet_damaged_cell_count() + this.miss_count();
+    }
+
+    shoot(col, row) { // keep parameter order: x, y consistent
         if ((row < 0) || (row >= rows)) return;
         if ((col < 0) || (col >= cols)) return;
         switch (this.grid[row][col]) {
