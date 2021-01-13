@@ -53,6 +53,21 @@ class Grid {
         }
     }
 
+    grid() {
+        return this.#grid;
+    }
+
+    // returns grid with intact cells hidden
+    grid_intact_hidden() {
+        let grid_hidden = this.#grid;
+        for (let i = 0; i < rows; i++) {
+            for (let j = 0; j < cols; j++) {
+                grid_hidden = grid_hidden[i][j] === 'O' ? ' ' : grid_hidden[i][j];
+            }
+        }
+        return grid_hidden;
+    }
+
     rows() {
         return rows;
     }

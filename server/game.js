@@ -30,6 +30,20 @@ class Game {
         }
         let grid1 = this.#grids.get(player1_id);
         let grid2 = this.#grids.get(player2_id);
+
+        // Test for game winner
+        if (grid1.number_of_moves() > 0 && grid1.fleet_intact_cell_count() === 0) {
+            return {
+                status: "GAME_OVER",
+                winner: this.#players.get(player2_id).name
+            }
+        } else if (grid2.number_of_moves() > 0 && grid2.fleet_intact_cell_count() === 0) {
+            return {
+                status: "GAME_OVER",
+                winner: this.#players.get(player1_id).name
+            }
+        }
+
         let player1_ready = grid1.fleet_max_intact_cell_count() ===
                     (grid1.fleet_damaged_cell_count() + grid1.fleet_intact_cell_count());
         let player2_ready = grid2.fleet_max_intact_cell_count() ===
