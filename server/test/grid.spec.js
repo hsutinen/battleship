@@ -142,4 +142,18 @@ describe("Grid", () => {
         assert.strictEqual(grid.empty_cell_count(), grid.rows() * grid.cols() - 9 - 2,
             "Failed to update grid correctly");
     });
+    it("Get ship position shoud work", () => {
+        let grid = new Grid();
+        grid.try_position_ship("Battleship", "HORIZONTAL", 2, 4);
+        assert.deepStrictEqual(grid.positions_of("Battleship"), [
+            {x: 2, y: 4, orientation: "HORIZONTAL" }
+        ]
+        , "Did not update positions correctly 1");
+        grid.try_position_ship("Battleship", "VERTICAL", 0, 1);
+        assert.deepStrictEqual(grid.positions_of("Battleship"), [
+            {x: 2, y: 4, orientation: "HORIZONTAL" },
+            {x: 0, y: 1, orientation: "VERTICAL" }
+        ]
+        , "Did not update positions correctly 2");
+    });
 });

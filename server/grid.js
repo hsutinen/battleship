@@ -25,19 +25,15 @@ class Grid {
         this.active_fleet = {
             "Carrier": {
                 "positions" : [],
-                "count": 0
             },
             "Battleship": {
                 "positions" : [],
-                "count": 0
             },
             "Cruiser": {
                 "positions" : [],
-                "count": 0
             },
             "Patrol boat": {
                 "positions" : [],
-                "count": 0
             }
         };
         this.grid = [];
@@ -59,6 +55,20 @@ class Grid {
     
     at(x, y) {
         return this.grid[y][x];
+    }
+
+    number_of(shipType) {
+        if(this.active_fleet[shipType])
+            return this.active_fleet[shipType].positions.length;
+        else
+            return 0;
+    }
+
+    positions_of(shipType) {
+        if(this.active_fleet[shipType])
+            return this.active_fleet[shipType].positions;
+        else
+            return [];
     }
 
     fleet_max_intact_cell_count() {
@@ -121,7 +131,7 @@ class Grid {
         }
         let ship_max_count = fleet_data.get(shipType).count;
         let ship_size = fleet_data.get(shipType).size;
-        if (this.active_fleet[shipType].count == ship_max_count) {
+        if (this.number_of(shipType) == ship_max_count) {
             console.log(`Max ship count for ${shipType} reached.`);
             return false;
         }
@@ -177,8 +187,7 @@ class Grid {
                 }
                 break;
         }
-        this.active_fleet[shipType].count += 1;
-        this.active_fleet[shipType].positions.push([x, y, orientation]);
+        this.active_fleet[shipType].positions.push({x, y, orientation});
         return true;
     }
 }
