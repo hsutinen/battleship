@@ -58,6 +58,21 @@ describe("Grid", () => {
         assert.strictEqual(grid.empty_cell_count(), grid.rows() * grid.cols() - 5,
             "Failed to update grid correctly");
     });
+    it("Should not be able to position three Battleships", () => {
+        let grid = new Grid();
+        assert(grid.try_position_ship("Battleship", "HORIZONTAL", 0, 0),
+            "Could not position Battleship on empty grid.");
+        assert(grid.try_position_ship("Battleship", "HORIZONTAL", 1, 1),
+            "Could not position Battleship on empty grid.");
+        assert(!grid.try_position_ship("Battleship", "HORIZONTAL", 2, 2),
+            "Too many Battleships on grid.");
+        assert.strictEqual(grid.grid[0].slice(0,5).join(""), "OOOO ",
+            "Failed to update grid correctly");
+        assert.strictEqual(grid.grid[1].slice(1,6).join(""), "OOOO ",
+            "Failed to update grid correctly");
+        assert.strictEqual(grid.empty_cell_count(), grid.rows() * grid.cols() - 8,
+            "Failed to update grid correctly");
+    });
     it("Should be able to position two Battleships", () => {
         let grid = new Grid();
         assert(grid.try_position_ship("Battleship", "HORIZONTAL", 0, 0),
