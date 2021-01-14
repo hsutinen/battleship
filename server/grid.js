@@ -13,7 +13,7 @@ const fleet_data = new Map([
         "size": 3,
         "count": 3
     }],
-    ["Patrol boat", {
+    ["PatrolBoat", {
         "size": 2,
         "count": 4
     }]
@@ -38,7 +38,7 @@ class Grid {
             "Cruiser": {
                 "positions" : [],
             },
-            "Patrol boat": {
+            "PatrolBoat": {
                 "positions" : [],
             }
         };
