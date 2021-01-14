@@ -1,6 +1,10 @@
 import { v4 as uuid } from "uuid";
 import Grid from "./grid.js";
 import assert from "assert";
+import { type } from "os";
+
+// For checking input
+const uuidRegex = /^([0-9,a-f]){8}-([0-9,a-f]){4}-([0-9,a-f]){4}-([0-9,a-f]){4}-([0-9,a-f]){12}$/;
 
 class Game {
     #id
@@ -10,6 +14,53 @@ class Game {
         this.#id = uuid();
         this.#players = new Map();
         this.#grids = new Map();
+    }
+
+    prettyPrint() {
+        let result = "";
+        for (let item of this.#players.entries()) {
+            result += `Player ${item[1].number}: ${item[1].name}` + "<br>";
+            result += "Grid:<br>";
+            for (let row of this.#grids.get(item[0]).grid()) {
+                result += "   ";
+                result += row.join("").replace(/ /g, '_') + "<br>";
+            }
+        }
+        return result;
+    }
+
+    toObject() {
+        let id = this.#id;
+        let players = [];
+        let grids = [];
+        for(let item of this.#players.entries()) {
+            players.push(item);
+        }
+        for(let item of this.#grids.entries()) {
+            grids.push([
+                item[0],
+                item[1].toObject()
+            ]);
+        }
+        return { id, players, grids };
+    }
+
+    fromObject(obj) {
+        let { id, players, grids } = obj;
+        if (!(typeof(id) === "string" && id.match(uuidRegex)))
+            throw "Game: invalid serialization format";
+        if (!(typeof(players) === "object" && players instanceof Array))
+            throw "Game: invalid serialization format";
+        if (!(typeof(grids) === "object" && grids instanceof Array))
+            throw "invalid serialization format";
+        this.#id = id;
+        this.#players = new Map(players);
+        this.#grids = new Map();
+        for (let item of grids) {
+            let grid = new Grid();
+            grid.fromObject(item[1]);
+            this.#grids.set(item[0], grid);
+        }
     }
 
     id() {
@@ -55,6 +106,16 @@ class Game {
         }
     }
 
+    state(playerId) {
+        let state = [];
+        if (this.#grids.has(playerId)) {
+            for (let row of this.#grids.get(playerId).grid()) {
+                state.push(row.join(""));
+            }
+        }
+        return state;
+    }
+
     has_player(playerName) {
         if ([...this.#players.values()].find( (value) => value.name === playerName))
             return true;
@@ -89,6 +150,11 @@ class Game {
         } else {
             return false;
         }
+    }
+
+    try_position_ship(playerId, shipType, orientation, x, y) {
+        if (this.#grids.has(playerId))
+            return this.#grids.get(playerId).try_position_ship(shipType, orientation, x, y);
     }
 
     make_move(playerId, x, y) {

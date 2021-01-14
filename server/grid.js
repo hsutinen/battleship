@@ -20,7 +20,6 @@ const fleet_data = new Map([
 ]);
 
 class Grid {
-    #state
     #active_fleet
     #grid
 
@@ -29,7 +28,6 @@ class Grid {
     }
 
     clear() {
-        this.#state = "INITIAL_STATE";
         this.#active_fleet = {
             "Carrier": {
                 "positions" : [],
@@ -53,19 +51,36 @@ class Grid {
         }
     }
 
+    toObject() {
+        return {
+            active_fleet: this.#active_fleet,
+            grid: this.#grid
+        };
+    }
+
+    fromObject(obj) {
+        let {active_fleet, grid} = obj;
+        if (!active_fleet || !grid) throw "Invalid grid format";
+        this.#active_fleet = active_fleet;
+        this.#grid = grid;
+    }
+
     grid() {
         return this.#grid;
     }
 
     // returns grid with intact cells hidden
     grid_intact_hidden() {
+        /*
         let grid_hidden = this.#grid;
         for (let i = 0; i < rows; i++) {
             for (let j = 0; j < cols; j++) {
-                grid_hidden = grid_hidden[i][j] === 'O' ? ' ' : grid_hidden[i][j];
+                grid_hidden[i][j] = grid_hidden[i][j] === 'O' ? ' ' : grid_hidden[i][j];
             }
         }
         return grid_hidden;
+        */
+       return this.#grid;
     }
 
     rows() {
