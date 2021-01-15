@@ -19,11 +19,11 @@ class Game {
     prettyPrint() {
         let result = "";
         for (let item of this.#players.entries()) {
-            result += `Player ${item[1].number}: ${item[1].name}` + "<br>";
-            result += "Grid:<br>";
+            result += `Player ${item[1].number}: ${item[1].name}` + "\n<br>";
+            result += "Grid:\n<br>";
             for (let row of this.#grids.get(item[0]).grid()) {
                 result += "   ";
-                result += row.join("").replace(/ /g, '_') + "<br>";
+                result += row.join("").replace(/ /g, '_') + "\n<br>";
             }
         }
         return result;

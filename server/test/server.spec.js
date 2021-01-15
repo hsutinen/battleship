@@ -123,3 +123,65 @@ describe('GET /status/:game_id', () => {
       });
   });
 });
+
+// This is a huge test case. Must populate grid for both players
+describe('GET /has-turn/:game_id/:player_id', () => {
+  it('Should decide move order correctly', async () => {
+    await supertest(app).get('/reset-next-game');
+    let res1 = await supertest(app).get('/join-game/player1');
+    let game_id = res1.body.game_id;
+    let player1_id = res1.body.player_id;
+    let res2 = await supertest(app).get('/join-game/player2');
+    let player2_id = res2.body.player_id;
+    await supertest(app).get(`/position-ship/${game_id}/${player1_id}/Carrier/HORIZONTAL/0/0`);
+    await supertest(app).get(`/position-ship/${game_id}/${player1_id}/Battleship/HORIZONTAL/0/1`);
+    await supertest(app).get(`/position-ship/${game_id}/${player1_id}/Battleship/HORIZONTAL/0/2`);
+    await supertest(app).get(`/position-ship/${game_id}/${player1_id}/Cruiser/HORIZONTAL/0/3`);
+    await supertest(app).get(`/position-ship/${game_id}/${player1_id}/Cruiser/HORIZONTAL/0/4`);
+    await supertest(app).get(`/position-ship/${game_id}/${player1_id}/Cruiser/HORIZONTAL/0/5`);
+    await supertest(app).get(`/position-ship/${game_id}/${player1_id}/PatrolBoat/HORIZONTAL/0/6`);
+    await supertest(app).get(`/position-ship/${game_id}/${player1_id}/PatrolBoat/HORIZONTAL/0/7`);
+    await supertest(app).get(`/position-ship/${game_id}/${player1_id}/PatrolBoat/HORIZONTAL/0/8`);
+    await supertest(app).get(`/position-ship/${game_id}/${player1_id}/PatrolBoat/HORIZONTAL/0/9`);
+
+    await supertest(app).get(`/position-ship/${game_id}/${player2_id}/Carrier/HORIZONTAL/0/0`);
+    await supertest(app).get(`/position-ship/${game_id}/${player2_id}/Battleship/HORIZONTAL/0/1`);
+    await supertest(app).get(`/position-ship/${game_id}/${player2_id}/Battleship/HORIZONTAL/0/2`);
+    await supertest(app).get(`/position-ship/${game_id}/${player2_id}/Cruiser/HORIZONTAL/0/3`);
+    await supertest(app).get(`/position-ship/${game_id}/${player2_id}/Cruiser/HORIZONTAL/0/4`);
+    await supertest(app).get(`/position-ship/${game_id}/${player2_id}/Cruiser/HORIZONTAL/0/5`);
+    await supertest(app).get(`/position-ship/${game_id}/${player2_id}/PatrolBoat/HORIZONTAL/0/6`);
+    await supertest(app).get(`/position-ship/${game_id}/${player2_id}/PatrolBoat/HORIZONTAL/0/7`);
+    await supertest(app).get(`/position-ship/${game_id}/${player2_id}/PatrolBoat/HORIZONTAL/0/8`);
+    await supertest(app).get(`/position-ship/${game_id}/${player2_id}/PatrolBoat/HORIZONTAL/0/9`);
+
+    let res = await supertest(app).get(`/pretty-print/${game_id}`);
+    console.log(res.text);
+
+    let res3 = await supertest(app).get(`/status/${game_id}`);
+    console.log(res3.body);
+    assert.strictEqual(res3.body.status, "GAME_RUNNING", "Game not initialized properly");
+
+  });
+});
+/*
+const fleet_data = new Map([
+    ["Carrier", {
+        "size": 5,
+        "count": 1
+    }],
+    ["Battleship", {
+        "size": 4,
+        "count": 2
+    }],
+    ["Cruiser", {
+        "size": 3,
+        "count": 3
+    }],
+    ["PatrolBoat", {
+        "size": 2,
+        "count": 4
+    }]
+]);
+*/
+// app.get("/position-ship/:game_id/:player_id/:ship_type/:orientation/:x/:y", (req, res) => {

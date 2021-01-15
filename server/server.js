@@ -62,9 +62,98 @@ app.get("/get-game/:game_id", (req, res) => {
   }
 });
 
+app.get("/has-turn/:game_id/:player_id", (req, res) => {
+  let game_id = req.params.game_id;
+  if (!game_id.match(uuidRegex)) {
+    res.json({
+      error: "Invalid game id"
+    });
+    return;
+  }
+  let player_id = req.params.player_id;
+  if (!player_id.match(uuidRegex)) {
+    res.json({
+      error: "Invalid player id"
+    });
+    return;
+  }
+  if (db.has_game(game_id)) {
+    let game = db.get_game(game_id);
+    let { status } = game.status()
+    if (status !== "GAME_RUNNING") {
+      res.json({
+        error: "Game not running."
+      });
+      return;
+    }
+    res.json({
+      has_turn: game.has_turn(player_id)
+    });;
+  } else {
+    res.json({
+      error: "Game not found in database"
+    });
+  }
+});
+
+app.get("/make-turn/:game_id/:player_id/:x/:y", (req, res) => {
+  let game_id = req.params.game_id;
+  let player_id = req.params.player_id;
+  let x = parseInt(req.params.x);
+  let y = parseInt(req.params.y);
+
+  if (!game_id.match(uuidRegex)) {
+    res.json({
+      error: "Invalid game id"
+    });
+    return;
+  }
+  if (!player_id.match(uuidRegex)) {
+    res.json({
+      error: "Invalid player id"
+    });
+    return;
+  }
+  // test for NaN
+  if (!(x === x) || !(y === y)) {
+    res.json({
+      error: "Invalid coordinate"
+    });
+    return;
+  }
+
+  if (db.has_game(game_id)) {
+    let game = db.get_game(game_id);
+    let { status } = game.status();
+    if (status !== "GAME_RUNNING") {
+      res.json({
+        error: "Game not running"
+      });
+      return;
+    }
+    if (game.has_turn(player_id)) {
+      game.make_move(player_id, x, y);
+      db.update_game(game_id);
+      res.json({
+        ok: true
+      });
+      return;
+    } else {
+      res.json({
+        error: `Player: ${player_id} does not have turn.`
+      });
+      return;
+    }
+  } else {
+    res.json({
+      error: "Game not found in database"
+    });
+  }
+});
+
 
 app.get("/status/:game_id", (req, res) => {
-  let game_id = req.params.game_id
+  let game_id = req.params.game_id;
   if (!game_id.match(uuidRegex)){
     res.json({
       error: "Invalid game id"
@@ -107,6 +196,13 @@ app.get("/position-ship/:game_id/:player_id/:ship_type/:orientation/:x/:y", (req
   if (!(orientation === "HORIZONTAL" || orientation === "VERTICAL")) {
     res.json({
       error: "Invalid orientation"
+    });
+    return;
+  }
+  // test for NaN
+  if(!(x === x) || !(y === y)) {
+    res.json({
+      error: "Invalid coordinate"
     });
     return;
   }
