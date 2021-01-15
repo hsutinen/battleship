@@ -1,5 +1,7 @@
 <RCC>
     <qresource prefix="/">
+        <file>join-game.qml</file>
+        <file>initialize-game.qml</file>
         <file>main.qml</file>
     </qresource>
 </RCC>

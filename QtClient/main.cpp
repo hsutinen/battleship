@@ -18,7 +18,7 @@ int main(int argc, char *argv[])
     engine.load(url);
     QObject * const object = engine.rootObjects().at(0);
 
-    Game game;
+    Game game(&engine);
     QObject *button = object->findChild<QObject *>("requestButton");
     if (object) {
         QObject::connect(button, SIGNAL(requestPressed(QString)),
