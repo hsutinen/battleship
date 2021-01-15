@@ -133,6 +133,17 @@ describe('GET /has-turn/:game_id/:player_id', () => {
     let player1_id = res1.body.player_id;
     let res2 = await supertest(app).get('/join-game/player2');
     let player2_id = res2.body.player_id;
+    
+    let has_turn1 = await supertest(app).get(`/has-turn/${game_id}/${player1_id}`);
+    assert.deepStrictEqual(has_turn1.body,
+      { error: "Game not running" },
+       "Should not be able to have a turn when game is not running");
+    
+    let make_turn1 = await supertest(app).get(`/make-turn/${game_id}/${player1_id}/0/0`);
+    assert.deepStrictEqual(make_turn1.body,
+      { error: "Game not running" },
+       "Should not be able to make a turn when game is not running");
+
     await supertest(app).get(`/position-ship/${game_id}/${player1_id}/Carrier/HORIZONTAL/0/0`);
     await supertest(app).get(`/position-ship/${game_id}/${player1_id}/Battleship/HORIZONTAL/0/1`);
     await supertest(app).get(`/position-ship/${game_id}/${player1_id}/Battleship/HORIZONTAL/0/2`);
@@ -155,33 +166,36 @@ describe('GET /has-turn/:game_id/:player_id', () => {
     await supertest(app).get(`/position-ship/${game_id}/${player2_id}/PatrolBoat/HORIZONTAL/0/8`);
     await supertest(app).get(`/position-ship/${game_id}/${player2_id}/PatrolBoat/HORIZONTAL/0/9`);
 
-    let res = await supertest(app).get(`/pretty-print/${game_id}`);
-    console.log(res.text);
-
     let res3 = await supertest(app).get(`/status/${game_id}`);
-    console.log(res3.body);
     assert.strictEqual(res3.body.status, "GAME_RUNNING", "Game not initialized properly");
+
+    let has_turn2 = await supertest(app).get(`/has-turn/${game_id}/${player1_id}`);
+    assert.deepStrictEqual(has_turn2.body,
+      { has_turn: true },
+       "Player 1 should have the first turn");
+
+    let has_turn3 = await supertest(app).get(`/has-turn/${game_id}/${player2_id}`);
+    assert.deepStrictEqual(has_turn3.body,
+      { has_turn: false },
+       "Player 2 should not have the first turn");
+
+    let make_turn2 = await supertest(app).get(`/make-turn/${game_id}/${player2_id}/0/0`);
+    assert(make_turn2.body.error, "Player 2 should not be able to make the first move");
+
+    let make_turn3 = await supertest(app).get(`/make-turn/${game_id}/${player1_id}/0/0`);
+    assert(make_turn3.body.ok, "Player 1 should be able to make the first move");
+
+    let make_turn4 = await supertest(app).get(`/make-turn/${game_id}/${player1_id}/1/1`);
+    assert(make_turn4.body.error, "Player 1 should not be able to make two consecutive moves");
+
+    let make_turn5 = await supertest(app).get(`/make-turn/${game_id}/${player2_id}/0/0`);
+    assert(make_turn5.body.ok, "Player 2 should be able to make the second move");
+    
+    let res =  await supertest(app).get(`/pretty-print/${game_id}`);
+    console.log(res.text);
 
   });
 });
-/*
-const fleet_data = new Map([
-    ["Carrier", {
-        "size": 5,
-        "count": 1
-    }],
-    ["Battleship", {
-        "size": 4,
-        "count": 2
-    }],
-    ["Cruiser", {
-        "size": 3,
-        "count": 3
-    }],
-    ["PatrolBoat", {
-        "size": 2,
-        "count": 4
-    }]
-]);
-*/
+// app.get("/make-turn/:game_id/:player_id/:x/:y", (req, res) => {
+// app.get("/has-turn/:game_id/:player_id", (req, res) => {
 // app.get("/position-ship/:game_id/:player_id/:ship_type/:orientation/:x/:y", (req, res) => {

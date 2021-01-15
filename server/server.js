@@ -82,7 +82,7 @@ app.get("/has-turn/:game_id/:player_id", (req, res) => {
     let { status } = game.status()
     if (status !== "GAME_RUNNING") {
       res.json({
-        error: "Game not running."
+        error: "Game not running"
       });
       return;
     }
