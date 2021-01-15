@@ -1,6 +1,4 @@
-QT += quick
-QT += network
-QT += core
+QT += quick network core
 
 
 CONFIG += c++11
@@ -11,6 +9,7 @@ CONFIG += c++11
 
 SOURCES += \
         game.cpp \
+        jsonutils.cpp \
         main.cpp
 
 RESOURCES += qml.qrc
@@ -27,4 +26,5 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 HEADERS += \
-    game.h
+    game.h \
+    jsonutils.h

@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
     QObject *button = object->findChild<QObject *>("requestButton");
     if (object) {
         QObject::connect(button, SIGNAL(requestPressed(QString)),
-                         &game, SLOT(joinGame(QString)));
+                         &game, SLOT(joinGameRequest(QString)));
     }
 
     return app.exec();
