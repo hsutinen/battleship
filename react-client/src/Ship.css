@@ -1,0 +1,15 @@
+.ship-container-column {
+    display: flex;
+    flex-direction: column;
+}
+
+.ship-container-row {
+    display: flex;
+    flex-direction: row;
+}
+
+.ship-item {
+    width: 20px;
+    height: 20px;
+    background-color: red;
+}
