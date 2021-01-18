@@ -1,6 +1,7 @@
 import express from "express";
 import bodyParser from "body-parser";
-import assert from "assert"
+import assert from "assert";
+import cors from "cors";
 import Db from "./db.js";
 import Game from "./game.js";
 
@@ -13,6 +14,7 @@ let next_game = new Game()
 // For checking input
 const uuidRegex = /^([0-9,a-f]){8}-([0-9,a-f]){4}-([0-9,a-f]){4}-([0-9,a-f]){4}-([0-9,a-f]){12}$/;
 
+app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
@@ -219,8 +221,14 @@ app.get("/position-ship/:game_id/:player_id/:ship_type/:orientation/:x/:y", (req
     });
     return;
   }
-  game.try_position_ship(player_id, ship_type, orientation, x, y);
-  db.update_game(game_id);
+  if (game.try_position_ship(player_id, ship_type, orientation, x, y)) {
+    db.update_game(game_id);
+  } else {
+    res.json({
+      error: "Could not position ship"
+    });
+    return;
+  }
   res.json(game.state());
 });
 
