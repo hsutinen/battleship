@@ -9,11 +9,11 @@ ApplicationWindow {
     visible: true
     title: qsTr("Battleship")
     id: mainWindow
-
     StackView {
         width: mainWindow.width
         height: mainWindow.height
         id: contentFrame
-        initialItem: Qt.resolvedUrl("join-game.qml")
+        objectName: "contentFrame"
+        initialItem: Qt.resolvedUrl("qrc:/join-game.qml")
     }
 }
